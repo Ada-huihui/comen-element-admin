@@ -2,7 +2,15 @@ import request from '@/utils/request'
 
 export function login(data) {
   return request({
-    url: '/vue-admin-template/user/login',
+    url: '/sys/login',
+    method: 'post',
+    data
+  })
+}
+
+export function getCheck(data) {
+  return request({
+    url: '/sys/randomImage',
     method: 'post',
     data
   })
@@ -18,7 +26,7 @@ export function getInfo(token) {
 
 export function logout() {
   return request({
-    url: '/vue-admin-template/user/logout',
-    method: 'post'
+    url: '/sys/logout',
+    method: 'get'
   })
 }

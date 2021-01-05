@@ -3,7 +3,7 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">Login Form</h3>
+        <h3 class="title">官网后台管理系统</h3>
       </div>
 
       <el-form-item prop="username">
@@ -40,7 +40,22 @@
           <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
         </span>
       </el-form-item>
-
+      <el-form-item class="code" label="" prop="captcha">
+        <el-input
+          v-model="loginForm.captcha"
+          placeholder="验证码"
+          prefix-icon="lj-icon-yanzhengma"
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
+          maxlength="4"
+          style="float: left; width: 122px;"
+          @keyup.enter.native="handleLogin"
+        />
+        <div class="captcha">
+          <img ref="code" src="" @click="changeCode">
+        </div>
+      </el-form-item>
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
 
       <div class="tips">
@@ -54,6 +69,7 @@
 
 <script>
 import { validUsername } from '@/utils/validate'
+import { getCheck } from '@/api/user'
 
 export default {
   name: 'Login',
@@ -74,8 +90,10 @@ export default {
     }
     return {
       loginForm: {
-        username: 'admin',
-        password: '111111'
+        username: 'huangchunfei',
+        password: '',
+        checkKey: '',
+        captcha: ''
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -94,7 +112,26 @@ export default {
       immediate: true
     }
   },
+  mounted() {
+    this.changeCode()
+  },
   methods: {
+    // 获取checkKey
+    getCaptchaKey() {
+      const captchaKey = Math.random().toString(36).substring(2)
+      return captchaKey
+    },
+    changeCode() {
+      const checkKey	 = this.getCaptchaKey()
+      this.loginForm.checkKey	 = checkKey
+      const data = {
+        key: checkKey
+      }
+      // 获取验证码图片
+      getCheck(data).then(response => {
+        this.$refs.code.setAttribute('src', response.data)
+      })
+    },
     showPwd() {
       if (this.passwordType === 'password') {
         this.passwordType = ''
@@ -124,7 +161,12 @@ export default {
   }
 }
 </script>
-
+<style  scoped>
+.code .el-form-item__content {
+  display: flex;
+  justify-content: space-between;
+}
+</style>
 <style lang="scss">
 /* 修复input 背景不协调 和光标变色 */
 /* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
