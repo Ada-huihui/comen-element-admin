@@ -1,21 +1,22 @@
 <template>
   <div class="app-container">
-    <el-select v-model="categoryId" placeholder="请选择" @change="change(categoryId)">
+    <el-select v-model="recruitCategory" placeholder="请选择" @change="change(recruitCategory)">
       <el-option
         v-for="item in options"
-        :key="item.id"
-        :label="item.label"
-        :value="item.value"
+        :key="item.code"
+        :label="item.text"
+        :value="item.code"
       />
     </el-select>
     <el-button type="primary" @click="toAdd()">新增</el-button>
 
     <el-table :data="tableData" stripe style="width: 100%">
-      <el-table-column prop="type" label="类别" width="180" />
+      <el-table-column prop="typeText" label="类别" width="180" />
       <el-table-column prop="title" label="职位" width="180" />
       <el-table-column prop="dep" label="所属部门" width="180" />
       <el-table-column prop="place" label="工作地点" width="180" />
       <el-table-column prop="num" label="招聘人数" />
+      <el-table-column prop="pubTime" label="发布时间" />
       <el-table-column
         fixed="right"
         label="操作"
@@ -52,9 +53,9 @@
           <el-select v-model="form.type" placeholder="请选择类型" :disabled="!isEdit">
             <el-option
               v-for="item in options"
-              :key="item.id"
-              :label="item.label"
-              :value="item.value"
+              :key="item.code"
+              :label="item.text"
+              :value="item.code"
             />
           </el-select>
         </el-form-item>
@@ -118,8 +119,7 @@
   </div>
 </template>
 <script>
-import { getRecruitList, editRecruit, delRecruit } from '@/api/hr'
-
+import { getRecruitCategory, getRecruitList, editRecruit, delRecruit } from '@/api/hr'
 export default {
   data() {
     return {
@@ -141,24 +141,21 @@ export default {
         phone: '13726900485',
         type: '社招'
       },
-      options: [
-        {
-          value: '社招',
-          label: '社招'
-        },
-        {
-          value: '校招',
-          label: '校招'
-        }
-      ],
-      categoryId: '',
+      options: [],
+      recruitCategory: '',
       tableData: []
     }
   },
   mounted() {
+    this.getCategory()
     this.getRecruitList()
   },
   methods: {
+    getCategory() {
+      getRecruitCategory('recruit_category').then(res => {
+        this.options = res.data
+      })
+    },
     addContent() {
       if (this.jobDescription.content) {
         this.postContent.push(this.jobDescription)
@@ -177,10 +174,10 @@ export default {
     delRequire(index) {
       this.postRequire.splice(index, 1)
     },
-    change(id) {
-      console.log('h1h1hh1', id)
+    change(value) {
+      console.log(value)
       const param = {
-        categoryId: id
+        recruitCategory: value
       }
       this.getRecruitList(param)
     },
@@ -195,6 +192,7 @@ export default {
             'postRequire': item.postRequire,
             'pubTime': item.pubTime,
             'type': item.recruitCategory,
+            'typeText': item.recruitCategory_dictTxt,
             'email': item.recruitEmail,
             'num': item.recruitNum,
             'phone': item.recruitPhone,
@@ -265,18 +263,6 @@ export default {
         })
         this.getRecruitList()
       })
-      // if (!this.form.newsId) {
-      //   addRecruit(param).then(res => {
-      //     this.dialogFormVisible = false
-      //     this.getRecruitList()
-      //   })
-      // } else {
-      //   param.newsId = this.form.newsId
-      //   editRecruit(param).then(res => {
-      //     this.dialogFormVisible = false
-      //     this.getRecruitList()
-      //   })
-      // }
     },
     onCancel() {
       this.dialogFormVisible = false

@@ -164,19 +164,13 @@ export default {
         article: article,
         title: title
       }
-      console.log(this.form.newsId, ' 1111')
-      if (!this.form.newsId) {
-        addList(param).then(res => {
-          this.dialogFormVisible = false
-          this.getList()
-        })
-      } else {
+      if (this.form.newsId) {
         param.newsId = this.form.newsId
-        editList(param).then(res => {
-          this.dialogFormVisible = false
-          this.getList()
-        })
       }
+      addList(param).then(res => {
+        this.dialogFormVisible = false
+        this.getList()
+      })
     },
     onCancel() {
       this.dialogFormVisible = false

@@ -1,5 +1,12 @@
 import request from '@/utils/request'
 
+export function getRecruitCategory(params) {
+  return request({
+    url: `/sys/dict/dictItems/${params}`,
+    method: 'get'
+  })
+}
+
 export function getRecruitList(params) {
   return request({
     url: '/recruit/page',
